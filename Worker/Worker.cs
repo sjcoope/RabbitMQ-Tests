@@ -15,14 +15,6 @@ namespace Worker
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(
-                        queue: "hello",
-                        durable: false,
-                        exclusive: false,
-                        autoDelete: false,
-                        arguments: null
-                    );
-
                     var consumer = new EventingBasicConsumer(channel);
                     consumer.Received += (model, ea) =>
                     {
@@ -34,6 +26,8 @@ namespace Worker
                         Thread.Sleep(dots * 1000);
 
                         Console.WriteLine("Done");
+
+                        channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
                     };
                     channel.BasicConsume(queue: "task_queue", autoAck: true, consumer: consumer);
 

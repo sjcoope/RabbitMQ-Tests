@@ -12,7 +12,13 @@ namespace NewTask
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "task_queue", durable: true, exclusive: false, autoDelete: false, arguments: null);
+                channel.QueueDeclare(
+                    queue: "task_queue",
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null
+                );
 
                 var message = GetMessage(args);
                 var body = Encoding.UTF8.GetBytes(message);
@@ -20,12 +26,17 @@ namespace NewTask
                 var properties = channel.CreateBasicProperties();
                 properties.Persistent = true;
 
-                channel.BasicPublish(exchange: "", routingKey: "task_queue", basicProperties: properties, body: body);
-                Console.WriteLine("Sent {0}", message);
-            } 
+                channel.BasicPublish(
+                    exchange: "",
+                    routingKey: "task_queue",
+                    basicProperties: properties,
+                    body: body);
 
-            Console.WriteLine("Console still open..."); 
-            Console.Read();
+                Console.WriteLine("Sent {0}", message);
+            }
+
+            Console.WriteLine("Console still open...");
+            Console.ReadLine();
         }
 
         private static string GetMessage(string[] args)
